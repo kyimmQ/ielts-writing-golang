@@ -1,0 +1,7 @@
+server:
+  port: 8080
+mongodb:
+  uri:
+jwt:
+  secret_key: 1234567890
+  expiry: 3600
