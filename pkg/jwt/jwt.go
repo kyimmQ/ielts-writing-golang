@@ -40,7 +40,6 @@ func GenerateToken(secret string, expiry int, userID uuid.UUID) (string, error) 
 }
 
 func VerifyToken(tokenString string, secret string) (*UserClaims, error) {
-	slog.Info("Verifying token", "token", tokenString)
 
 	token, err := jwt.ParseWithClaims(
 		tokenString,
@@ -66,6 +65,5 @@ func VerifyToken(tokenString string, secret string) (*UserClaims, error) {
 		return nil, ErrInvalidToken
 	}
 
-	slog.Info("Token verified successfully", "user_id", claims.UserID)
 	return claims, nil
 }

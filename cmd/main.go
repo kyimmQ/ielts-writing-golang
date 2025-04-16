@@ -17,7 +17,10 @@ import "github.com/kyimmQ/ielts-writing-golang/internal/server"
 //	@host		localhost:8080
 //	@BasePath	/api
 
-//	@securityDefinitions.basic	BasicAuth
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	server := server.InitServer()
 

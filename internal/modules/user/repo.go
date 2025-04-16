@@ -15,8 +15,8 @@ var (
 )
 
 type UserRepositoryI interface {
-	CreateUser(user *entity.User) error
-	FindUserByUsername(username string) (*entity.User, error)
+	CreateUser(ctx context.Context, user *entity.User) error
+	GetUserByUsername(ctx context.Context, username string) (*entity.User, error)
 }
 
 type UserRepository struct {
@@ -29,22 +29,22 @@ func NewUserRepository(db *mongo.Client) UserRepositoryI {
 	}
 }
 
-func (r *UserRepository) CreateUser(user *entity.User) error {
+func (r *UserRepository) CreateUser(ctx context.Context, user *entity.User) error {
 	// Insert the user into the database
 	collection := r.db.Database(dbName).Collection(collectionName)
-	_, err := collection.InsertOne(context.TODO(), &user)
+	_, err := collection.InsertOne(ctx, &user)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %s, error: %v", user.Username, err)
 	}
 	return nil
 }
 
-func (r *UserRepository) FindUserByUsername(username string) (*entity.User, error) {
+func (r *UserRepository) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
 	// Find the user by username
 	collection := r.db.Database(dbName).Collection(collectionName)
 	filter := bson.D{{Key: "username", Value: username}}
 	var user entity.User
-	err := collection.FindOne(context.TODO(), filter).Decode(&user)
+	err := collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user by username: %s, error: %v", username, err)
 	}

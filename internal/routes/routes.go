@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/kyimmQ/ielts-writing-golang/docs"
+	middleware "github.com/kyimmQ/ielts-writing-golang/internal/middleware"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -31,6 +32,11 @@ func InitRoute() http.Handler {
 	api := r.Group("/api")
 	{
 		InitAuthRoute(api)
+	}
+	authenApi := api.Group("")
+	authenApi.Use(middleware.AuthenMiddleware())
+	{
+		InitPromptRoute(authenApi)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

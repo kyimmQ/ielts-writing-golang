@@ -17,7 +17,7 @@ all: swag build
 # Generate Swagger documentation
 swag:
 	@echo "Generating Swagger documentation..."
-	swag init -g $(SRC_DIR)
+	swag init -g $(SRC_DIR) --parseDependency --parseInternal
 
 # Build project
 build: swag

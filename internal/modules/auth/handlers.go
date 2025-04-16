@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/auth/dto"
+	userDTO "github.com/kyimmQ/ielts-writing-golang/internal/modules/user/dto"
 	errors "github.com/kyimmQ/ielts-writing-golang/pkg/error"
 	"github.com/kyimmQ/ielts-writing-golang/pkg/response"
 )
@@ -29,12 +30,12 @@ func NewAuthHandler(authService AuthServiceI) AuthHandlerI {
 // @Tags			Policy
 // @Accept			json
 // @Produce		json
-// @Param			SignUpRequest	body		dto.SignUpRequest	true	"SignUpRequest JSON"
+// @Param			CreateUserRequest	body		userDTO.CreateUserRequest	true	"CreateUserRequest JSON"
 // @Success		200	{object}	response.SuccessResponse{data=string}
 // @Failure	400 {object} response.ErrorResponse
 // @Router			/auth/signup [post]
 func (h *AuthHandler) SignUp(ctx *gin.Context) {
-	var req dto.SignUpRequest
+	var req userDTO.CreateUserRequest
 
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
 		slog.Error("Failed to sign up user", "error", err)

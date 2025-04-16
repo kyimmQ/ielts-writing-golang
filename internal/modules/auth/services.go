@@ -7,38 +7,28 @@ import (
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/auth/dto"
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/auth/helper"
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/user"
+	userDTO "github.com/kyimmQ/ielts-writing-golang/internal/modules/user/dto"
 	"github.com/kyimmQ/ielts-writing-golang/pkg/hash"
 )
 
 type AuthServiceI interface {
-	SignUp(ctx context.Context, req *dto.SignUpRequest) error
+	SignUp(ctx context.Context, req *userDTO.CreateUserRequest) error
 	SignIn(ctx context.Context, req *dto.SignInRequest) (string, error)
 }
 
 type AuthService struct {
-	usrRepo user.UserRepositoryI
+	usrService user.UserServiceI
 }
 
-func NewAuthService(usrRepo user.UserRepositoryI) AuthServiceI {
+func NewAuthService(usrService user.UserServiceI) AuthServiceI {
 	return &AuthService{
-		usrRepo: usrRepo,
+		usrService: usrService,
 	}
 }
 
-func (s *AuthService) SignUp(ctx context.Context, req *dto.SignUpRequest) error {
-	// Convert the request to a user entity
-	userEntity := req.ToEntity()
-
-	// Hash the password
-	hashPassword, err := hash.Generate(req.Password)
-	if err != nil {
-		return err
-	}
-
-	// Set the hashed password in the user entity
-	userEntity.Password = hashPassword
+func (s *AuthService) SignUp(ctx context.Context, req *userDTO.CreateUserRequest) error {
 	// Call the user repository to create the user
-	err = s.usrRepo.CreateUser(userEntity)
+	err := s.usrService.CreateUser(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -48,7 +38,9 @@ func (s *AuthService) SignUp(ctx context.Context, req *dto.SignUpRequest) error 
 
 func (s *AuthService) SignIn(ctx context.Context, req *dto.SignInRequest) (string, error) {
 	// Find the user by username
-	userEntity, err := s.usrRepo.FindUserByUsername(req.Username)
+	var findUserReq userDTO.GetUserByUsernameRequest
+	findUserReq.Username = req.Username
+	userEntity, err := s.usrService.GetUserByUsername(ctx, &findUserReq)
 	if err != nil {
 		return "", err
 	}

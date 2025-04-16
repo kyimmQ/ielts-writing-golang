@@ -9,7 +9,8 @@ import (
 
 func InitAuthRoute(api *gin.RouterGroup) {
 	userRepo := user.NewUserRepository(global.MongoDB)
-	authService := auth.NewAuthService(userRepo)
+	userService := user.NewUserService(userRepo)
+	authService := auth.NewAuthService(userService)
 	authHandler := auth.NewAuthHandler(authService)
 
 	authRoute := api.Group("/auth")
