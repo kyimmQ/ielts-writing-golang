@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/auth/dto"
@@ -10,8 +11,8 @@ import (
 )
 
 type AuthServiceI interface {
-	SignUp(req *dto.SignUpRequest) error
-	SignIn(req *dto.SignInRequest) (string, error)
+	SignUp(ctx context.Context, req *dto.SignUpRequest) error
+	SignIn(ctx context.Context, req *dto.SignInRequest) (string, error)
 }
 
 type AuthService struct {
@@ -24,7 +25,7 @@ func NewAuthService(usrRepo user.UserRepositoryI) AuthServiceI {
 	}
 }
 
-func (s *AuthService) SignUp(req *dto.SignUpRequest) error {
+func (s *AuthService) SignUp(ctx context.Context, req *dto.SignUpRequest) error {
 	// Convert the request to a user entity
 	userEntity := req.ToEntity()
 
@@ -45,7 +46,7 @@ func (s *AuthService) SignUp(req *dto.SignUpRequest) error {
 	return nil
 }
 
-func (s *AuthService) SignIn(req *dto.SignInRequest) (string, error) {
+func (s *AuthService) SignIn(ctx context.Context, req *dto.SignInRequest) (string, error) {
 	// Find the user by username
 	userEntity, err := s.usrRepo.FindUserByUsername(req.Username)
 	if err != nil {

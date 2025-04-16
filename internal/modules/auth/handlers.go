@@ -42,7 +42,7 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.authService.SignUp(&req); err != nil {
+	if err := h.authService.SignUp(ctx, &req); err != nil {
 		slog.Error("Failed to sign up user", "error", err)
 		response.ResponseError(ctx, err)
 		return
@@ -70,7 +70,7 @@ func (h *AuthHandler) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.SignIn(&req)
+	token, err := h.authService.SignIn(ctx, &req)
 	if err != nil {
 		slog.Error("Failed to sign in user", "error", err)
 		response.ResponseError(ctx, err)
