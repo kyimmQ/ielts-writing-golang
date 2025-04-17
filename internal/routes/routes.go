@@ -37,6 +37,7 @@ func InitRoute() http.Handler {
 	authenApi.Use(middleware.AuthenMiddleware())
 	{
 		InitPromptRoute(authenApi)
+		InitEssayRoute(authenApi)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

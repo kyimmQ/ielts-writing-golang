@@ -45,6 +45,6 @@ type Essay struct {
 	Content   string      `json:"content" bson:"content"`
 	Status    EssayStatus `json:"status" bson:"status"`
 	Band      BandType    `json:"band,omitempty" bson:"band,omitempty"`
-	TimeTaken int         `json:"timeTaken,omitempty" bson:"band,omitempty"`
+	TimeTaken int         `json:"timeTaken,omitempty" bson:"timeTaken,omitempty"`
 	UpdatedAt time.Time   `json:"updatedAt" bson:"updatedAt"`
 }

@@ -43,7 +43,7 @@ func (h *PromptHandler) CreatePrompt(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.promptService.CreatePrompt(ctx.Request.Context(), &req); err != nil {
+	if err := h.promptService.CreatePrompt(ctx, &req); err != nil {
 		slog.Error("Failed to create prompt", "error", err)
 		response.ResponseError(ctx, err)
 		return
@@ -62,7 +62,7 @@ func (h *PromptHandler) CreatePrompt(ctx *gin.Context) {
 // @Failure		400	{object}	response.ErrorResponse
 // @Router			/prompts/random [get]
 func (h *PromptHandler) GetRandomPrompt(ctx *gin.Context) {
-	prompt, err := h.promptService.GetRandomPrompt(ctx.Request.Context())
+	prompt, err := h.promptService.GetRandomPrompt(ctx)
 	if err != nil {
 		slog.Error("Failed to get random prompt", "error", err)
 		response.ResponseError(ctx, err)

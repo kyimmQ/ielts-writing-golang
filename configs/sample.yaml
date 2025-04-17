@@ -2,6 +2,7 @@ server:
   port: 8080
 mongodb:
   uri:
+  database_name: ielts-writing
 jwt:
   secret_key: 1234567890
   expiry: 3600

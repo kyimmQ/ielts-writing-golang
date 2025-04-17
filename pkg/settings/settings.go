@@ -11,7 +11,8 @@ type ServerConfig struct {
 }
 
 type MongoDBConfig struct {
-	URI string `mapstructure:"uri" json:"uri"`
+	URI          string `mapstructure:"uri" json:"uri"`
+	DatabaseName string `mapstructure:"database_name" json:"database_name"`
 }
 
 type JWTConfig struct {

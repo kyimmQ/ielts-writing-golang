@@ -39,7 +39,7 @@ func AuthenMiddleware() gin.HandlerFunc {
 		}
 
 		// Set user information in the context
-		c.Set("userId", token.UserID.String())
+		c.Set("userId", token.UserID)
 		// Proceed to the next middleware or handler
 		c.Next()
 	}

@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kyimmQ/ielts-writing-golang/global"
 	"github.com/kyimmQ/ielts-writing-golang/internal/entity"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 var (
-	dbName         = "ielts-writing"
-	collectionName = "users"
+	CollectionName = "users"
 )
 
 type UserRepositoryI interface {
@@ -31,7 +31,7 @@ func NewUserRepository(db *mongo.Client) UserRepositoryI {
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *entity.User) error {
 	// Insert the user into the database
-	collection := r.db.Database(dbName).Collection(collectionName)
+	collection := r.db.Database(global.Config.MongoDB.DatabaseName).Collection(CollectionName)
 	_, err := collection.InsertOne(ctx, &user)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %s, error: %v", user.Username, err)
@@ -41,7 +41,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *entity.User) erro
 
 func (r *UserRepository) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
 	// Find the user by username
-	collection := r.db.Database(dbName).Collection(collectionName)
+	collection := r.db.Database(global.Config.MongoDB.DatabaseName).Collection(CollectionName)
 	filter := bson.D{{Key: "username", Value: username}}
 	var user entity.User
 	err := collection.FindOne(ctx, filter).Decode(&user)
