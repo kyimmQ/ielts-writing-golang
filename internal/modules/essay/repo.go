@@ -2,7 +2,6 @@ package essay
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -37,7 +36,7 @@ func (r *EssayRepository) CreateEssay(ctx context.Context, e *entity.Essay) erro
 	coll := r.db.Database(global.Config.MongoDB.DatabaseName).Collection(collectionName)
 	_, err := coll.InsertOne(ctx, e)
 	if err != nil {
-		return errors.NewDomainError(http.StatusInternalServerError, err, "failed to create essay", "CreateEssayError")
+		return errors.NewDomainError(http.StatusInternalServerError, err, "failed to create essay", "EssayCreateError")
 	}
 	return nil
 }
@@ -52,13 +51,13 @@ func (r *EssayRepository) GetUserEssays(ctx context.Context, userID uuid.UUID, s
 
 	cursor, err := essayCollection.Find(ctx, filter)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get essay(s), error: %v", err)
+		return nil, errors.NewDomainError(http.StatusInternalServerError, err, "failed to get essay(s)", "EssayGetError")
 	}
 
 	var results []entity.Essay
 
 	if err := cursor.All(ctx, &results); err != nil {
-		return nil, fmt.Errorf("failed to parse essay(s), error: %v", err)
+		return nil, errors.NewDomainError(http.StatusInternalServerError, err, "failed to parse essay(s)", "EssayParseError")
 	}
 
 	return results, nil
@@ -75,7 +74,7 @@ func (r *EssayRepository) UpdateEssayDraft(ctx context.Context, e *dto.UpdateEss
 	}
 	_, err := r.db.Database(global.Config.MongoDB.DatabaseName).Collection(collectionName).UpdateOne(ctx, filter, update)
 	if err != nil {
-		return fmt.Errorf("failed to update essay, error: %v", err)
+		return errors.NewDomainError(http.StatusInternalServerError, err, "failed to update essay", "EssayUpdateError")
 	}
 	return nil
 }

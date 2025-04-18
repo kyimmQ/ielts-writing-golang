@@ -2,10 +2,11 @@ package user
 
 import (
 	"context"
-	"errors"
+	"net/http"
 
 	"github.com/kyimmQ/ielts-writing-golang/internal/entity"
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/user/dto"
+	errors "github.com/kyimmQ/ielts-writing-golang/pkg/error"
 	"github.com/kyimmQ/ielts-writing-golang/pkg/hash"
 )
 
@@ -31,7 +32,7 @@ func (s *UserSevice) CreateUser(ctx context.Context, req *dto.CreateUserRequest)
 	// Hash the password
 	hashPassword, err := hash.Generate(req.Password)
 	if err != nil {
-		return errors.New("error hasing password")
+		return errors.NewDomainError(http.StatusInternalServerError, err, "failed to hash password", "UserHashPasswordError")
 	}
 
 	// Set the hashed password in the user entity

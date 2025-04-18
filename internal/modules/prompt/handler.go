@@ -59,7 +59,7 @@ func (h *PromptHandler) CreatePrompt(ctx *gin.Context) {
 // @Security     Bearer
 // @Produce		json
 // @Success		200	{object}	response.SuccessResponse{data=dto.PromptResponse}
-// @Failure		400	{object}	response.ErrorResponse
+// @Failure		500	{object}	response.ErrorResponse "{"errorKey": "PromptGetRandomError|PromptParseError", "errorMessage": "string"}"
 // @Router			/prompts/random [get]
 func (h *PromptHandler) GetRandomPrompt(ctx *gin.Context) {
 	prompt, err := h.promptService.GetRandomPrompt(ctx)

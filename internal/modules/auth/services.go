@@ -2,12 +2,13 @@ package auth
 
 import (
 	"context"
-	"fmt"
+	"net/http"
 
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/auth/dto"
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/auth/helper"
 	"github.com/kyimmQ/ielts-writing-golang/internal/modules/user"
 	userDTO "github.com/kyimmQ/ielts-writing-golang/internal/modules/user/dto"
+	errors "github.com/kyimmQ/ielts-writing-golang/pkg/error"
 	"github.com/kyimmQ/ielts-writing-golang/pkg/hash"
 )
 
@@ -47,7 +48,7 @@ func (s *AuthService) SignIn(ctx context.Context, req *dto.SignInRequest) (strin
 
 	// Check if the password is correct
 	if ok := hash.Validate(userEntity.Password, req.Password); !ok {
-		return "", fmt.Errorf("invalid password")
+		return "", errors.NewDomainError(http.StatusUnauthorized, nil, "invalid password", "AuthInvalidPassword")
 	}
 
 	token, err := helper.GenerateAccessToken(userEntity.ID)

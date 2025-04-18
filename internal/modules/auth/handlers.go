@@ -32,7 +32,9 @@ func NewAuthHandler(authService AuthServiceI) AuthHandlerI {
 // @Produce		json
 // @Param			CreateUserRequest	body		userDTO.CreateUserRequest	true	"CreateUserRequest JSON"
 // @Success		200	{object}	response.SuccessResponse{data=string}
-// @Failure	400 {object} response.ErrorResponse
+// @Failure	400 {object} response.ErrorResponse "{"errorKey": "ERR_INVALID_INPUT", "errorMessage": "invalid input"}"
+// @Failure	500 {object} response.ErrorResponse "{"errorKey": "UserHashPasswordError", "errorMessage": "failed to hash password"}"
+// @Failure	500 {object} response.ErrorResponse "{"errorKey": "UserAddToDBError", "errorMessage": "failed to add user to database"}"
 // @Router			/auth/signup [post]
 func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	var req userDTO.CreateUserRequest
@@ -59,8 +61,11 @@ func (h *AuthHandler) SignUp(ctx *gin.Context) {
 // @Accept			json
 // @Produce		json
 // @Param			SignInRequest	body		dto.SignInRequest	true	"SignInRequest JSON"
-// @Success		200	{object}	response.SuccessResponse{data=string}
-// @Failure	400 {object} response.ErrorResponse
+// @Success		200	{object}	response.SuccessResponse{data=dto.SignInResponse}
+// @Failure	400 {object} response.ErrorResponse "{"errorKey": "ERR_INVALID_INPUT", "errorMessage": "invalid input"}"
+// @Failure	401 {object} response.ErrorResponse "{"errorKey": "AuthInvalidPassword", "errorMessage": "invalid password"}"
+// @Failure	404 {object} response.ErrorResponse "{"errorKey": "UserNotFound", "errorMessage": "username not found"}"
+// @Failure	500 {object} response.ErrorResponse "{"errorKey": "ERR_GENERATE_TOKEN", "errorMessage": "string"}"
 // @Router			/auth/signin [post]
 func (h *AuthHandler) SignIn(ctx *gin.Context) {
 	var req dto.SignInRequest
@@ -72,13 +77,17 @@ func (h *AuthHandler) SignIn(ctx *gin.Context) {
 	}
 
 	token, err := h.authService.SignIn(ctx, &req)
+
 	if err != nil {
 		slog.Error("Failed to sign in user", "error", err)
 		response.ResponseError(ctx, err)
 		return
 	}
 
+	var responseData dto.SignInResponse
+	responseData.Token = token
+
 	slog.Info("User signed in successfully", "username", req.Username)
-	response.ReponseSuccess(ctx, "User signed in successfully", token)
+	response.ReponseSuccess(ctx, "User signed in successfully", responseData)
 
 }

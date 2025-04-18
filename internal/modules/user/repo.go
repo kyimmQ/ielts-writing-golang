@@ -2,10 +2,11 @@ package user
 
 import (
 	"context"
-	"fmt"
+	"net/http"
 
 	"github.com/kyimmQ/ielts-writing-golang/global"
 	"github.com/kyimmQ/ielts-writing-golang/internal/entity"
+	errors "github.com/kyimmQ/ielts-writing-golang/pkg/error"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -34,7 +35,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *entity.User) erro
 	collection := r.db.Database(global.Config.MongoDB.DatabaseName).Collection(CollectionName)
 	_, err := collection.InsertOne(ctx, &user)
 	if err != nil {
-		return fmt.Errorf("failed to create user: %s, error: %v", user.Username, err)
+		return errors.NewDomainError(http.StatusInternalServerError, err, "failed to add user to database", "UserAddToDBError")
 	}
 	return nil
 }
@@ -46,7 +47,7 @@ func (r *UserRepository) GetUserByUsername(ctx context.Context, username string)
 	var user entity.User
 	err := collection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user by username: %s, error: %v", username, err)
+		return nil, errors.NewDomainError(http.StatusNotFound, err, "username not found", "UserNotFound")
 	}
 	return &user, nil
 }

@@ -3,10 +3,12 @@ package prompt
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/kyimmQ/ielts-writing-golang/global"
 	"github.com/kyimmQ/ielts-writing-golang/internal/entity"
+	errors "github.com/kyimmQ/ielts-writing-golang/pkg/error"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -46,13 +48,13 @@ func (r *PromptRepository) GetRandomPrompt(ctx context.Context) (*entity.ExamPro
 	// Count total prompts
 	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{sampleStage})
 	if err != nil {
-		return nil, fmt.Errorf("fail to get random prompt, error: %v", err)
+		return nil, errors.NewDomainError(http.StatusInternalServerError, err, "failed to get random prompt", "PromptGetRandomError")
 	}
 	defer cursor.Close(ctx)
 
 	var result []entity.ExamPrompt
 	if err = cursor.All(ctx, &result); err != nil {
-		return nil, fmt.Errorf("error parsing exam prompt, error: %v", err)
+		return nil, errors.NewDomainError(http.StatusInternalServerError, err, "failed to parse random prompt", "PromptParseError")
 	}
 
 	return &(result[0]), nil
@@ -66,9 +68,9 @@ func (r *PromptRepository) GetPromptByID(ctx context.Context, id uuid.UUID) (*en
 	err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&prompt)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("prompt with ID %s not found", id)
+			return nil, errors.NewDomainError(http.StatusNotFound, err, "prompt not found", "PromptNotFound")
 		}
-		return nil, fmt.Errorf("failed to get prompt by ID %s, error: %v", id, err)
+		return nil, errors.NewDomainError(http.StatusInternalServerError, err, "failed to get prompt", "PromptGetError")
 	}
 	return &prompt, nil
 }
